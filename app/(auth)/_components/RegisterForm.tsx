@@ -1,7 +1,9 @@
 "use client"
+import { RegisterAction } from "@/app/_actions/auth.action";
 import { RegisterFormData, RegisterSchema } from "@/app/_utils/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoMdLogIn } from "react-icons/io";
@@ -13,10 +15,19 @@ export default function LoginForm() {
             resolver : zodResolver(RegisterSchema)
         })
     
-        const onSubmit= (data:RegisterFormData)=>{
-            reset() ;
-            console.log(data)
+    const onSubmit= async (data:RegisterFormData)=>{
+        const result = await RegisterAction(data);
+        if (result?.success) {
+            toast.success(result.success);
+            reset();
         }
+        
+        if (result?.error) {
+            toast.error(result.error);
+        }
+        
+        console.log(data);
+    }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col mb-3">
@@ -56,10 +67,10 @@ export default function LoginForm() {
             <IoMdLogIn/> {isSubmitting?<BeatLoader/>: "register"}
         </button>
         <div className="flex justify-center items-center gap-6 mt-6">
-            <div className="flex justify-center bg-blue-100 items-center border w-1/2 border-blue-100 hover:bg-blue-200 rounded px-4 py-2 cursor-pointer">
+            <div className="flex justify-center bg-blue-100 items-center border  w-1/2 border-blue-500 hover:bg-blue-200 rounded px-4 py-2 cursor-pointer">
                 <FcGoogle className="text-4xl"/>
             </div>
-            <div className="flex justify-center w-1/2 items-center border bg-slate-100 hover:bg-slate-200 rounded px-4 py-2 cursor-pointer">
+            <div className="flex justify-center w-1/2 items-center border border-slate-500 bg-slate-100 hover:bg-slate-200 rounded px-4 py-2 cursor-pointer">
                 <FaGithub className="text-4xl"/>
             </div>
         </div>
